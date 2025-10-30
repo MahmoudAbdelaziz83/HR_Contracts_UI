@@ -1,0 +1,186 @@
+<div class="container-fluid mt-3">
+
+  <!-- شاشة عرض العقود -->
+  <div *ngIf="!showForm">
+    <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">📋 إدارة عقود الموظفين</h4>
+        <div class="d-flex align-items-center gap-2">
+          <input type="text" class="form-control" placeholder="ابحث عن موظف أو بند..."
+            [(ngModel)]="contractSearchKeyword" (input)="filterContracts()" />
+
+          <button class="btn btn-success" (click)="openAddForm()">
+            <i class="fa-solid fa-plus"></i> إضافة عقد جديد
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div *ngIf="groupedContracts.length > 0; else noData">
+          <div *ngFor="let group of groupedContracts" class="accordion-item mb-2 border rounded shadow-sm">
+
+            <div class="accordion-header p-2 d-flex justify-content-between align-items-center"
+              (click)="toggleEmployee(group.staff_name)">
+              <h5 class="mb-0">{{ group.staff_name }}</h5>
+              <i class="fa" [ngClass]="openedEmployee === group.staff_name ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+            </div>
+
+            <div class="accordion-body px-3 py-2" *ngIf="openedEmployee === group.staff_name">
+              <ul class="list-group">
+                <li *ngFor="let clause of group.clauses"
+                  class="list-group-item d-flex justify-content-between align-items-start">
+
+                  <div>
+                    <div class="fw-bold text-primary">{{ clause.ClauseName }}</div>
+                    <small class="text-muted">{{ clause.ClauseDescription }}</small>
+                  </div>
+
+                  <button class="btn btn-sm btn-danger align-self-center"
+                    (click)="deleteContractByClause(group.staff_name, clause.ClauseId)">
+                    حذف
+                  </button>
+
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noData>
+          <p class="text-center text-muted mt-3">لا توجد عقود حالياً.</p>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- شاشة إضافة عقد جديد -->
+  <div *ngIf="showForm">
+    <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">➕ إضافة عقد جديد</h4>
+        <button class="btn btn-secondary" (click)="showForm = false">
+          <i class="fa-solid fa-arrow-left"></i> رجوع
+        </button>
+      </div>
+
+      <div class="card-body">
+
+        <!-- البحث عن موظف -->
+        <div class="mb-3">
+          <label>🔍 ابحث عن موظف</label>
+          <input type="text" class="form-control" [(ngModel)]="searchKeyword" (input)="searchStaff()"
+            placeholder="اكتب اسم الموظف..." />
+          <ul *ngIf="staffList.length" class="list-group mt-1">
+            <li *ngFor="let s of staffList" class="list-group-item list-group-item-action" (click)="selectStaff(s)">
+              {{ s.staff_name }}
+            </li>
+          </ul>
+        </div>
+
+        <div *ngIf="selectedStaff" class="alert alert-info">تم اختيار: <strong>{{ selectedStaff.staff_name }}</strong>
+        </div>
+
+        <div class="mb-3 mt-3">
+          <label for="staffType">🧾 اختر نوع العقد</label>
+          <select id="staffType" class="form-control" [(ngModel)]="selectedStaffType">
+            <option value="">-- اختر نوع العقد --</option>
+<option *ngFor="let t of staffTypes" [value]="t.staff_type_sys_key">{{ t.a_desc }}</option>
+          </select>
+        </div>
+
+        <hr>
+
+
+        <!-- ✅ إضافة بند جديد -->
+        <div class="card mb-4 border-success">
+          <div class="card-body">
+            <h5 class="text-success mb-3">➕ إضافة بند جديد</h5>
+
+            <input type="text" class="form-control mb-2" placeholder="اسم البند" [(ngModel)]="newClause.ClauseName" />
+            <textarea class="form-control mb-2" placeholder="الوصف" rows="2"
+              [(ngModel)]="newClause.ClauseDescription"></textarea>
+
+            <button class="btn btn-success" (click)="addClause()">
+              <i class="fa-solid fa-plus"></i> إضافة البند
+            </button>
+          </div>
+        </div>
+
+
+        <!-- ✅ اختيار البنود للموظف -->
+        <h5>اختر البنود للموظف</h5>
+        <input type="text" class="form-control mb-2" placeholder="ابحث عن بند..." [(ngModel)]="clauseSearchKeyword"
+          (input)="searchClauses()" />
+
+        <ul *ngIf="filteredClauses.length" class="list-group mb-3 clause-list-scroll">
+
+          <li *ngFor="let c of filteredClauses"
+            class="list-group-item d-flex justify-content-between align-items-center">
+
+            <div>
+              <div class="fw-bold">{{ c.ClauseName }}</div>
+              <small class="text-muted">{{ c.ClauseDescription }}</small>
+            </div>
+
+            <div class="d-flex gap-1">
+
+              <!-- ✅ زر إضافة البند للموظف -->
+              <button class="btn btn-sm btn-outline-success" [disabled]="selectedClauses.includes(c.ClauseId)"
+                (click)="toggleClause(c.ClauseId)">
+                ➕
+              </button>
+
+              <!-- ✅ زر تعديل البند -->
+              <button class="btn btn-sm btn-outline-primary" (click)="editClause(c)">
+                ✏️
+              </button>
+
+            </div>
+          </li>
+
+        </ul>
+
+
+        <!-- ✅ عرض البنود المختارة -->
+        <div class="alert alert-info" *ngIf="selectedClauses.length">
+          <strong>البنود المختارة:</strong>
+          <ul>
+            <li *ngFor="let id of selectedClauses">
+              {{ getClauseName(id) }}
+            </li>
+          </ul>
+        </div>
+
+
+        <!-- ✅ زر حفظ العقد -->
+        <button class="btn btn-primary" [disabled]="!selectedStaff || !selectedClauses.length"
+          (click)="saveContract()">
+          💾 حفظ العقد
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ✅ Popup تعديل بند هنا 👇 -->
+  <div *ngIf="editingClause" class="edit-overlay" (click)="cancelEdit()">
+
+    <div class="edit-popup" (click)="$event.stopPropagation()">
+      <h5 class="mb-2">✏️ تعديل البند</h5>
+
+      <input class="form-control mb-2" [(ngModel)]="editingClause.ClauseName" placeholder="اسم البند">
+
+      <textarea class="form-control mb-2" rows="3" [(ngModel)]="editingClause.ClauseDescription"
+        placeholder="وصف البند"></textarea>
+
+      <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-success btn-sm" (click)="updateClause()">حفظ ✅</button>
+        <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">إلغاء ❌</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>

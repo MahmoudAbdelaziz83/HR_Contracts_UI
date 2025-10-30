@@ -1,0 +1,136 @@
+.clause-list-scroll {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0;
+}
+
+.clause-list-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.clause-list-scroll::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+.clause-list-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #888;
+}
+
+.accordion-item {
+  background-color: #fff;
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.accordion-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.accordion-header:hover {
+  background-color: #e9ecef;
+}
+
+.accordion-body {
+  background-color: #fcfcfc;
+  border-top: 1px solid #ddd;
+}
+
+.list-group-item {
+  border: none;
+  border-bottom: 1px solid #eee;
+  padding: 4px 8px;
+  transition: background-color 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.list-group-item:last-child {
+  border-bottom: none;
+}
+
+.list-group-item:hover {
+  background-color: #f8f9fa;
+}
+
+.list-group-item.active {
+  background-color: #007bff !important;
+  color: white;
+  outline-style: auto;
+}
+
+.list-group-item small {
+  display: block;
+  margin-top: 2px;
+  color: #6c757d;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fa {
+  transition: transform 0.3s ease;
+}
+
+.fa-chevron-up {
+  transform: rotate(180deg);
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-container {
+  width: 400px;
+  background: #fff;
+  border-radius: 10px;
+}
+/* ✅ Popup خلفية */
+.edit-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* ✅ صندوق التعديل */
+.edit-popup {
+  width: 400px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+/* ✅ أنيميشن دخول */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
